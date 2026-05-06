@@ -4,21 +4,51 @@ import api from '../api/axios'
 
 export default function Register() {
   const navigate = useNavigate()
-  const [form, setForm] = useState({ username: '', email: '', password: '', role: 'USER' })
-  const [error, setError] = useState('')
+  const [form, setForm] = useState({ username: '', email: '', password: '', rol: 'VENDEDOR' })
+  const [errors, setErrors] = useState({})
+  const [globalError, setGlobalError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+    setErrors({ ...errors, [e.target.name]: '' })
+    setGlobalError('')
+  }
+
+  const validate = () => {
+    const newErrors = {}
+    if (!form.username.trim()) newErrors.username = 'El usuario es obligatorio'
+    else if (form.username.trim().length < 3) newErrors.username = 'Mínimo 3 caracteres'
+
+    if (!form.email.trim()) newErrors.email = 'El email es obligatorio'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = 'Formato de email inválido'
+
+    if (!form.password) newErrors.password = 'La contraseña es obligatoria'
+    else if (form.password.length < 6) newErrors.password = 'Mínimo 6 caracteres'
+
+    return newErrors
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    setGlobalError('')
+    const validationErrors = validate()
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors)
+      return
+    }
     setLoading(true)
     try {
-      await api.post('/auth/register', form)
+      await api.post('/api/auth/register', form)
       navigate('/login')
     } catch (err) {
-      setError(err.response?.data?.message ?? 'Error al registrarse')
+      if (err.response?.data?.message) {
+        setGlobalError(err.response.data.message)
+      } else if (!err.response) {
+        setGlobalError('No se pudo conectar con el servidor.')
+      } else {
+        setGlobalError('Error al registrarse. Intenta nuevamente.')
+      }
     } finally {
       setLoading(false)
     }
@@ -30,23 +60,27 @@ export default function Register() {
         <h1 className="text-2xl font-bold text-center text-blue-700 mb-6">Grupo Cordillera</h1>
         <h2 className="text-lg font-semibold text-gray-700 mb-4 text-center">Crear cuenta</h2>
 
-        {error && (
+        {globalError && (
           <div className="bg-red-50 border border-red-300 text-red-600 text-sm rounded px-3 py-2 mb-4">
-            {error}
+            {globalError}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Usuario</label>
             <input
               name="username"
               value={form.username}
               onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                errors.username ? 'border-red-400 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-400'
+              }`}
+              placeholder="tu_usuario"
             />
+            {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
             <input
@@ -54,10 +88,14 @@ export default function Register() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              required
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                errors.email ? 'border-red-400 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-400'
+              }`}
+              placeholder="correo@ejemplo.com"
             />
+            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Contraseña</label>
             <input
@@ -65,23 +103,28 @@ export default function Register() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              required
-              minLength={6}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 ${
+                errors.password ? 'border-red-400 focus:ring-red-300' : 'border-gray-300 focus:ring-blue-400'
+              }`}
+              placeholder="••••••••"
             />
+            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">Rol</label>
             <select
-              name="role"
-              value={form.role}
+              name="rol"
+              value={form.rol}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
             >
-              <option value="USER">Usuario</option>
-              <option value="ADMIN">Administrador</option>
+              <option value="VENDEDOR">Vendedor</option>
+              <option value="ADMIN_SUCURSAL">Admin Sucursal</option>
+              <option value="ADMIN_GENERAL">Admin General</option>
             </select>
           </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -93,9 +136,7 @@ export default function Register() {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="text-blue-600 hover:underline">
-            Inicia sesión
-          </Link>
+          <Link to="/login" className="text-blue-600 hover:underline">Inicia sesión</Link>
         </p>
       </div>
     </div>
