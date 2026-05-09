@@ -37,24 +37,26 @@ const ROLE_CONFIG = {
   }
 }
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const config = ROLE_CONFIG[user?.role] || ROLE_CONFIG.VENDEDOR
   const { accent, accentBg, label, badge, items } = config
 
   return (
-    <aside style={{
-      width: '248px',
-      minWidth: '248px',
-      minHeight: '100vh',
-      backgroundColor: '#0b0f1a',
-      display: 'flex',
-      flexDirection: 'column',
-      borderRight: '1px solid #1a2035',
-      fontFamily: "'DM Sans', system-ui, sans-serif",
-    }}>
-
+    <aside
+      className={`sidebar-panel${isOpen ? ' sidebar-open' : ''}`}
+      style={{
+        width: '248px',
+        minWidth: '248px',
+        minHeight: '100vh',
+        backgroundColor: '#0b0f1a',
+        display: 'flex',
+        flexDirection: 'column',
+        borderRight: '1px solid #1a2035',
+        fontFamily: "'DM Sans', system-ui, sans-serif",
+      }}
+    >
       {/* Brand */}
       <div style={{ padding: '28px 20px 24px', borderBottom: '1px solid #1a2035' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -65,7 +67,7 @@ export default function Sidebar() {
             fontSize: '17px', fontWeight: '800', color: '#0b0f1a', flexShrink: 0,
             boxShadow: `0 0 16px ${accent}44`
           }}>G</div>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
               color: '#f1f5f9', fontSize: '14px', fontWeight: '700',
               letterSpacing: '-0.3px', lineHeight: 1.2
@@ -75,6 +77,15 @@ export default function Sidebar() {
               letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '2px'
             }}>{badge}</div>
           </div>
+          {/* Close button (mobile only) */}
+          <button
+            className="btn-hamburger"
+            onClick={onClose}
+            aria-label="Cerrar menú"
+            style={{ marginLeft: 'auto' }}
+          >
+            ✕
+          </button>
         </div>
       </div>
 

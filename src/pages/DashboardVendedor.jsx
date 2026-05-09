@@ -72,7 +72,7 @@ export default function DashboardVendedor() {
   return (
     <Layout title="Mis KPIs de Ventas" subtitle="Panel de indicadores personales">
       {/* Banner */}
-      <div style={{
+      <div className="banner-row" style={{
         borderRadius: '16px', padding: '24px 28px',
         background: 'linear-gradient(135deg, #1a1000 0%, #292000 100%)',
         border: '1px solid #3d2e00', marginBottom: '28px',
@@ -102,7 +102,7 @@ export default function DashboardVendedor() {
 
       {/* Mini stats */}
       {!loading && kpis.length > 0 && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <div className="grid-3-cols" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '24px' }}>
           {[
             { label: 'KPIs activos', value: kpis.length, icon: '◆' },
             { label: 'Valor promedio', value: promedio, icon: '◎' },

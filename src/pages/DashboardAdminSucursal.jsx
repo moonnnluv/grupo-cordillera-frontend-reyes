@@ -26,7 +26,7 @@ export default function DashboardAdminSucursal() {
       subtitle="Panel de administración de sucursal"
     >
       {/* Banner */}
-      <div style={{
+      <div className="banner-row" style={{
         borderRadius: '16px', padding: '24px 28px',
         background: 'linear-gradient(135deg, #022c22 0%, #064e3b 100%)',
         border: '1px solid #065f46', marginBottom: '28px',
@@ -55,7 +55,7 @@ export default function DashboardAdminSucursal() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '28px' }}>
+      <div className="grid-2-cols" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '28px' }}>
         <StatCard
           label="KPIs de la sucursal"
           value={loading ? '—' : data.kpis.length}

@@ -16,10 +16,11 @@ export default function CircuitBreakerStatus({ estado }) {
         Estado del sistema
       </h2>
 
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+      <div className="cb-service-list" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
         {SERVICES.map(s => (
           <div
             key={s.label}
+            className="cb-badge"
             style={{
               display: 'flex',
               alignItems: 'center',

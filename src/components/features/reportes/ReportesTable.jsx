@@ -45,7 +45,9 @@ export default function ReportesTable({ reportes = [], loading = false, accent =
 
       {!loading && reportes.length > 0 && (
         <div>
+          {/* Encabezado: oculto en móvil */}
           <div
+            className="table-card-header"
             style={{
               display: 'grid',
               gridTemplateColumns: '2fr 1fr 1fr 1fr',
@@ -72,6 +74,7 @@ export default function ReportesTable({ reportes = [], loading = false, accent =
           {reportes.map((r, i) => (
             <div
               key={r.id || i}
+              className="table-card-row"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1fr 1fr 1fr',
@@ -82,16 +85,20 @@ export default function ReportesTable({ reportes = [], loading = false, accent =
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fafafa')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>
+              <div className="table-card-name" style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>
                 {r.titulo || r.nombre || `Reporte ${i + 1}`}
               </div>
               <div>
-                <Badge color={accent} bgColor={accentBg} style={{ fontSize: '11px' }}>
+                <Badge color={accent} bgColor={accentBg}>
                   {r.tipo || 'GENERAL'}
                 </Badge>
               </div>
-              <div style={{ fontSize: '12px', color: '#94a3b8' }}>{r.sucursal || '—'}</div>
-              <div style={{ fontSize: '12px', color: '#94a3b8' }}>{r.fecha || r.createdAt || '—'}</div>
+              <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>
+                {r.sucursal || '—'}
+              </div>
+              <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>
+                {r.fecha || r.createdAt || '—'}
+              </div>
             </div>
           ))}
         </div>

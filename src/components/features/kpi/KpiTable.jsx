@@ -1,5 +1,10 @@
 import Badge from '../../ui/Badge'
 
+function formatNumber(value) {
+  const num = Number(value)
+  return isNaN(num) ? '—' : num.toLocaleString('es-CL')
+}
+
 export default function KpiTable({ kpis = [], loading = false, accent = '#34d399', accentBg = 'rgba(52,211,153,0.1)', title = 'Indicadores KPI' }) {
   return (
     <div
@@ -43,7 +48,9 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
 
       {!loading && kpis.length > 0 && (
         <div>
+          {/* Encabezado: oculto en móvil */}
           <div
+            className="table-card-header"
             style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr 1fr 1fr',
@@ -70,6 +77,7 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
           {kpis.map((k, i) => (
             <div
               key={k.id || i}
+              className="table-card-row"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr 1fr 1fr',
@@ -80,14 +88,18 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fafafa')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
             >
-              <div style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>
+              <div className="table-card-name" style={{ fontSize: '13px', fontWeight: '600', color: '#0f172a' }}>
                 {k.nombre || k.indicador || `Indicador ${i + 1}`}
               </div>
-              <div style={{ fontSize: '13px', color: '#64748b' }}>{k.tipo || k.fuente || '—'}</div>
-              <div style={{ fontSize: '13px', fontWeight: '700', color: accent }}>
-                {k.valor ?? '—'} {k.unidad || ''}
+              <div className="col-mobile-hidden" style={{ fontSize: '13px', color: '#64748b' }}>
+                {k.tipo || k.fuente || '—'}
               </div>
-              <div style={{ fontSize: '12px', color: '#94a3b8' }}>{k.sucursal || '—'}</div>
+              <div className="table-card-value" style={{ fontSize: '13px', fontWeight: '700', color: accent }}>
+                {k.valor != null ? formatNumber(k.valor) : '—'} {k.unidad || ''}
+              </div>
+              <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>
+                {k.sucursal || '—'}
+              </div>
             </div>
           ))}
         </div>

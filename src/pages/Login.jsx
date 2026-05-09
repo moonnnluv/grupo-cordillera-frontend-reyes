@@ -65,7 +65,7 @@ export default function Login() {
       fontFamily: "'DM Sans', system-ui, sans-serif"
     }}>
       {/* Left panel - brand */}
-      <div style={{
+      <div className="auth-brand-panel" style={{
         width: '45%', minHeight: '100vh',
         background: 'linear-gradient(160deg, #0b0f1a 0%, #111827 50%, #0b0f1a 100%)',
         display: 'flex', flexDirection: 'column',

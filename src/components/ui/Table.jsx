@@ -11,6 +11,7 @@ export default function Table({
   accent = '#6366f1',
   accentBg = 'rgba(99,102,241,0.1)',
   renderRow,
+  headerRowClassName,
 }) {
   const count = rows?.length ?? 0
 
@@ -64,6 +65,7 @@ export default function Table({
         <div>
           {/* Column headers */}
           <div
+            className={headerRowClassName}
             style={{
               display: 'grid',
               gridTemplateColumns: `repeat(${columns.length}, 1fr)`,
@@ -71,20 +73,25 @@ export default function Table({
               borderBottom: '1px solid #f8fafc',
             }}
           >
-            {columns.map(col => (
-              <div
-                key={col}
-                style={{
-                  fontSize: '11px',
-                  fontWeight: '700',
-                  color: '#94a3b8',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                {col}
-              </div>
-            ))}
+            {columns.map(col => {
+              const label = typeof col === 'string' ? col : col.label
+              const cls = typeof col === 'object' ? col.className : undefined
+              return (
+                <div
+                  key={label}
+                  className={cls}
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: '700',
+                    color: '#94a3b8',
+                    letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {label}
+                </div>
+              )
+            })}
           </div>
 
           {/* Rows */}

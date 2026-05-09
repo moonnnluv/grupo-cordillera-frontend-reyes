@@ -63,7 +63,7 @@ export default function Register() {
       fontFamily: "'DM Sans', system-ui, sans-serif"
     }}>
       {/* Left panel */}
-      <div style={{
+      <div className="auth-brand-panel" style={{
         width: '38%', minHeight: '100vh',
         background: 'linear-gradient(160deg, #0b0f1a 0%, #111827 100%)',
         display: 'flex', flexDirection: 'column', padding: '48px',

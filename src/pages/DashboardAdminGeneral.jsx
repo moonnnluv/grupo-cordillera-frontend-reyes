@@ -87,11 +87,11 @@ export default function DashboardAdminGeneral() {
 
   return (
     <Layout
-      title="Panel Administrador General"
+      title="Admin General"
       subtitle="Visión consolidada de todas las sucursales"
     >
       {/* Welcome banner */}
-      <div style={{
+      <div className="banner-row" style={{
         borderRadius: '16px', padding: '24px 28px',
         background: 'linear-gradient(135deg, #0b0f1a 0%, #1e293b 100%)',
         border: '1px solid #1e293b', marginBottom: '28px',
@@ -120,7 +120,7 @@ export default function DashboardAdminGeneral() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
+      <div className="grid-3-cols" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '28px' }}>
         {CARDS.map(c => <StatCard key={c.label} {...c} />)}
       </div>
 
