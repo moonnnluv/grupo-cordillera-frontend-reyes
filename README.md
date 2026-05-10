@@ -1,4 +1,5 @@
 # frontend — Dashboard Grupo Cordillera
+**DSY1106 Desarrollo Fullstack III · DuocUC 2026**
 
 Panel de control web para monitoreo de KPIs, datos organizacionales y reportes de negocio. Implementa acceso basado en roles (RBAC): cada rol obtiene una vista y permisos distintos. Se comunica con el backend exclusivamente a través del API Gateway (`localhost:9090`).
 
@@ -18,9 +19,90 @@ Panel de control web para monitoreo de KPIs, datos organizacionales y reportes d
 
 ---
 
-## Puerto de desarrollo
+## Estructura del proyecto
 
-`http://localhost:5173` (servidor de desarrollo Vite)
+```
+frontend/
+├── public/
+│   ├── favicon.svg
+│   └── icons.svg
+├── src/
+│   ├── api/
+│   │   └── axios.js                  # Instancia Axios con interceptor JWT
+│   ├── assets/                       # Recursos estáticos
+│   ├── components/
+│   │   ├── features/
+│   │   │   ├── datos/
+│   │   │   │   ├── DatoForm.jsx      # Formulario de registro de datos
+│   │   │   │   └── DatosTable.jsx    # Tabla de datos organizacionales
+│   │   │   ├── kpi/
+│   │   │   │   ├── KpiCalculatorForm.jsx  # Formulario de cálculo de KPI
+│   │   │   │   └── KpiTable.jsx      # Tabla de KPIs
+│   │   │   ├── reportes/
+│   │   │   │   └── ReportesTable.jsx # Tabla de reportes
+│   │   │   └── CircuitBreakerStatus.jsx   # Estado de microservicios
+│   │   ├── layout/
+│   │   │   ├── Layout.jsx            # Layout principal con sidebar
+│   │   │   └── Navbar.jsx            # Barra superior
+│   │   ├── ui/
+│   │   │   ├── Badge.jsx             # Etiqueta inline con color configurable
+│   │   │   ├── Button.jsx            # Botón con variantes
+│   │   │   ├── Card.jsx              # Contenedor genérico
+│   │   │   ├── Input.jsx             # Campo de formulario con label
+│   │   │   ├── Modal.jsx             # Diálogo modal
+│   │   │   ├── StatCard.jsx          # Tarjeta de estadística
+│   │   │   └── Table.jsx             # Tabla reutilizable
+│   │   ├── ProtectedRoute.jsx        # Guarda de rutas por autenticación y rol
+│   │   └── Sidebar.jsx               # Navegación lateral según rol
+│   ├── context/
+│   │   └── AuthContext.jsx           # Context global de autenticación
+│   ├── pages/
+│   │   ├── DashboardAdminGeneral.jsx # Vista ADMIN_GENERAL
+│   │   ├── DashboardAdminSucursal.jsx # Vista ADMIN_SUCURSAL
+│   │   ├── DashboardVendedor.jsx     # Vista VENDEDOR
+│   │   ├── Login.jsx                 # Formulario de login
+│   │   ├── Register.jsx              # Formulario de registro
+│   │   └── Unauthorized.jsx          # Acceso denegado
+│   ├── App.jsx                       # Definición de rutas
+│   ├── main.jsx                      # Entry point
+│   └── index.css                     # Estilos globales
+├── index.html
+├── package.json
+├── vite.config.js
+└── eslint.config.js
+```
+
+---
+
+## Dependencias (package.json)
+
+### Producción
+| Paquete | Versión | Uso |
+|---|---|---|
+| `react` | ^19.2.5 | Framework UI |
+| `react-dom` | ^19.2.5 | Renderizado en el DOM |
+| `react-router-dom` | ^7.14.2 | Routing SPA |
+| `axios` | ^1.16.0 | Cliente HTTP con interceptores |
+
+### Desarrollo
+| Paquete | Versión | Uso |
+|---|---|---|
+| `vite` | ^8.0.10 | Build tool y servidor de desarrollo |
+| `@vitejs/plugin-react` | ^6.0.1 | Soporte JSX/React en Vite |
+| `tailwindcss` | ^4.2.4 | Utilidades CSS |
+| `@tailwindcss/vite` | ^4.2.4 | Integración Tailwind + Vite |
+| `eslint` | ^10.2.1 | Linter de código |
+
+---
+
+## Scripts disponibles
+
+| Script | Comando | Descripción |
+|---|---|---|
+| Desarrollo | `npm run dev` | Inicia servidor con hot reload en `localhost:5173` |
+| Build | `npm run build` | Compila para producción en `dist/` |
+| Preview | `npm run preview` | Sirve el build de producción localmente |
+| Lint | `npm run lint` | Ejecuta ESLint sobre el código fuente |
 
 ---
 
@@ -48,24 +130,101 @@ El token JWT y el objeto de usuario se persisten en `localStorage`:
 ### Prerrequisitos
 - Node.js 20+
 - npm 9+
-- API Gateway corriendo en `http://localhost:9090`
+- Backend completo corriendo (`docker compose up` desde el repositorio backend)
+- API Gateway disponible en `http://localhost:9090`
 
 ```bash
-# Instalar dependencias
+# 1. Instalar dependencias
 npm install
 
-# Iniciar servidor de desarrollo
+# 2. Iniciar servidor de desarrollo
 npm run dev
-
-# Compilar para producción
-npm run build
-
-# Vista previa del build de producción
-npm run preview
-
-# Ejecutar linter
-npm run lint
 ```
+
+La aplicación queda disponible en `http://localhost:5173`.
+
+---
+
+## Cómo probar los componentes
+
+> **Prerrequisito:** el backend debe estar levantado con `docker compose up` y las bases de datos pobladas con `datos_iniciales.sql`.
+
+### 1. Login — `Login.jsx`
+
+1. Abrir `http://localhost:5173`
+2. Ingresar las credenciales de un usuario de prueba:
+
+| Username | Password | Rol esperado |
+|---|---|---|
+| `admin` | `Admin123!` | ADMIN_GENERAL |
+| `jefa.santiago` | `Admin123!` | ADMIN_SUCURSAL |
+| `vendedor1` | `Admin123!` | VENDEDOR |
+
+3. Verificar que redirige automáticamente al dashboard correspondiente al rol.
+4. Verificar que con credenciales incorrectas aparece mensaje de error.
+
+---
+
+### 2. Dashboard Admin General — `DashboardAdminGeneral.jsx`
+
+Acceder con `admin` / `Admin123!`.
+
+**Datos organizacionales:**
+- La tabla debe mostrar los registros del seed (ventas de abril 2026, inventario, etc.)
+- Hacer clic en "Nuevo Dato" → completar el formulario → verificar que aparece en la tabla
+
+**KPIs:**
+- La tabla debe mostrar los KPIs del seed
+- Hacer clic en "Calcular KPI" → seleccionar tipo `VENTAS`, ingresar un valor base (ej: `100000`) → el resultado calculado debe ser `35000` (35%)
+- Tipos válidos y sus fórmulas:
+
+| Tipo | Fórmula | Unidad |
+|---|---|---|
+| `VENTAS` | valorBase × 0.35 | % |
+| `RENTABILIDAD` | valorBase × 1.15 | CLP |
+| `INVENTARIO` | valorBase / 30 | unidades/día |
+
+**Reportes:**
+- La tabla debe mostrar los reportes del seed
+
+**Circuit Breaker:**
+- Los badges de estado de microservicios deben aparecer como activos si el backend está corriendo
+
+---
+
+### 3. Dashboard Admin Sucursal — `DashboardAdminSucursal.jsx`
+
+Acceder con `jefa.santiago` / `Admin123!`.
+
+- Verificar que el dashboard muestra solo datos filtrados por sucursal `SANTIAGO`
+- Verificar que NO aparecen opciones de creación (solo lectura)
+- Intentar acceder a `/dashboard/admin-general` → debe redirigir a `/unauthorized`
+
+---
+
+### 4. Dashboard Vendedor — `DashboardVendedor.jsx`
+
+Acceder con `vendedor1` / `Admin123!`.
+
+- Verificar que solo se muestran KPIs de tipo `VENTAS`
+- Verificar que no hay formularios de creación ni edición
+- Intentar acceder a `/dashboard/admin-general` → debe redirigir a `/unauthorized`
+
+---
+
+### 5. Registro de usuario — `Register.jsx`
+
+1. Ir a `http://localhost:5173/register`
+2. Completar el formulario con un nuevo username, email y contraseña
+3. Seleccionar rol
+4. Verificar respuesta `201 Created` y redirección a `/login`
+
+---
+
+### 6. Protección de rutas — `ProtectedRoute.jsx`
+
+- Abrir una ventana de incógnito y navegar a `http://localhost:5173/dashboard/admin-general` → debe redirigir a `/login`
+- Iniciar sesión como `vendedor1` y navegar a `/dashboard/admin-general` → debe mostrar `/unauthorized`
 
 ---
 
@@ -75,20 +234,12 @@ npm run lint
 |---|---|---|---|
 | `/login` | `Login.jsx` | Público | — |
 | `/register` | `Register.jsx` | Público | — |
-| `/dashboard` | `DashboardRouter` | Autenticado | Redirige según rol |
+| `/dashboard` | Redirige según rol | Autenticado | Todos |
 | `/dashboard/admin-general` | `DashboardAdminGeneral.jsx` | Autenticado | `ADMIN_GENERAL` |
 | `/dashboard/admin-sucursal` | `DashboardAdminSucursal.jsx` | Autenticado | `ADMIN_SUCURSAL` |
 | `/dashboard/vendedor` | `DashboardVendedor.jsx` | Autenticado | `VENDEDOR` |
 | `/unauthorized` | `Unauthorized.jsx` | Público | — |
 | `/*` | Redirect | — | Redirige a `/login` |
-
-### Vistas por rol
-
-| Rol | Funcionalidades |
-|---|---|
-| `ADMIN_GENERAL` | Dashboard global, CRUD de datos organizacionales, cálculo de KPIs, reportes, estado de Circuit Breakers |
-| `ADMIN_SUCURSAL` | Dashboard filtrado por sucursal (SANTIAGO), lectura de datos, KPIs y reportes de esa sucursal |
-| `VENDEDOR` | Vista de solo lectura de KPIs de tipo `VENTAS` |
 
 ---
 
@@ -114,64 +265,17 @@ Authorization: Bearer <token>
 
 ---
 
-## Estructura de componentes
-
-### Páginas (`src/pages/`)
-
-| Archivo | Descripción |
-|---|---|
-| `Login.jsx` | Formulario de autenticación con validación |
-| `Register.jsx` | Formulario de registro con selector de rol |
-| `DashboardAdminGeneral.jsx` | Dashboard completo: tablas, modales de creación, estado de servicios |
-| `DashboardAdminSucursal.jsx` | Dashboard filtrado por sucursal |
-| `DashboardVendedor.jsx` | Vista de solo lectura de KPIs de ventas |
-| `Unauthorized.jsx` | Página de acceso denegado |
-
-### Componentes UI (`src/components/ui/`)
-
-| Componente | Descripción |
-|---|---|
-| `Button.jsx` | Botón con variantes: `primary`, `secondary`, `ghost`, `danger` |
-| `Input.jsx` | Campo de formulario con label e indicador de requerido |
-| `Card.jsx` | Contenedor genérico |
-| `StatCard.jsx` | Tarjeta de estadística con icono, valor, etiqueta y subtítulo |
-| `Badge.jsx` | Etiqueta inline con color configurable |
-| `Modal.jsx` | Diálogo con cabecera, botón de cierre y ancho configurable |
-| `Table.jsx` | Tabla reutilizable con estados de carga y vacío |
-
-### Componentes de funcionalidades (`src/components/features/`)
-
-| Componente | Descripción |
-|---|---|
-| `DatosTable.jsx` | Tabla de datos organizacionales (indicador, valor, sucursal, fecha) |
-| `DatoForm.jsx` | Formulario de registro de datos con validación |
-| `KpiTable.jsx` | Tabla de KPIs con acento de color configurable |
-| `KpiCalculatorForm.jsx` | Formulario de cálculo de KPI por tipo (VENTAS, PRODUCCION, CALIDAD, LOGISTICA, FINANCIERO) |
-| `ReportesTable.jsx` | Tabla de reportes generados |
-| `CircuitBreakerStatus.jsx` | Badges de estado para ms-datos, ms-kpi, ms-reportes, ms-auth, ms-bff y api-gateway |
-
-### Infraestructura (`src/`)
-
-| Archivo | Descripción |
-|---|---|
-| `context/AuthContext.jsx` | Context de autenticación: `user`, `token`, `login`, `logout`, `isAuthenticated` |
-| `components/ProtectedRoute.jsx` | Wrapper que valida autenticación y rol antes de renderizar la ruta |
-| `components/layout/Layout.jsx` | Layout principal con barra superior, sidebar y menú hamburguesa responsive |
-| `components/Sidebar.jsx` | Navegación lateral con ítems según rol y perfil de usuario |
-| `api/axios.js` | Instancia de Axios con `baseURL` e interceptor de token |
-
----
-
 ## Patrones implementados
 
-| Patrón | Descripción |
-|---|---|
-| **RBAC (Role-Based Access Control)** | Tres roles con vistas y permisos diferenciados; `ProtectedRoute` rechaza acceso no autorizado redirigiendo a `/unauthorized` |
-| **JWT Auth con Context API** | Token almacenado en `localStorage`, distribuido globalmente via `AuthContext`, inyectado en requests via interceptor de Axios |
-| **Protected Routes** | `ProtectedRoute` envuelve rutas privadas; redirige a `/login` si no hay sesión o a `/unauthorized` si el rol no coincide |
-| **BFF Consumption** | El frontend realiza una sola llamada a `/bff/dashboard` en lugar de llamar a tres servicios por separado |
-| **Modal-based CRUD** | Operaciones de creación (datos, KPIs) se presentan en modales sin cambio de ruta |
-| **Validación client-side** | Formularios validan campos requeridos, longitud mínima (username ≥ 3, password ≥ 6) y formato de email antes de enviar |
-| **Loading & Empty States** | Todas las tablas muestran spinner de carga y mensaje de vacío |
-| **Responsive Design** | Layout mobile-first con menú hamburguesa; columnas y tarjetas adaptadas a pantalla |
-| **Theming por rol** | Esquemas de color distintos: índigo (`ADMIN_GENERAL`), esmeralda (`ADMIN_SUCURSAL`), ámbar (`VENDEDOR`) |
+| Patrón | Archivo(s) | Justificación |
+|---|---|---|
+| **RBAC (Role-Based Access Control)** | `ProtectedRoute.jsx`, `App.jsx` | Grupo Cordillera tiene tres perfiles de usuario con necesidades distintas. RBAC garantiza que cada rol solo acceda a su vista correspondiente sin necesidad de lógica condicional dispersa en cada componente |
+| **Context API (Auth)** | `AuthContext.jsx` | El token JWT y los datos del usuario deben estar disponibles en toda la aplicación sin prop-drilling. Context centraliza el estado de sesión y expone las acciones `login` y `logout` a cualquier componente |
+| **Interceptor de Axios** | `api/axios.js` | Inyecta el JWT automáticamente en cada request sin repetir el header manualmente en cada llamada. Si el token cambia, solo se modifica el interceptor |
+| **BFF Consumption** | `DashboardAdminGeneral.jsx`, `DashboardAdminSucursal.jsx` | El frontend realiza una sola llamada a `/bff/dashboard` en lugar de tres llamadas paralelas. Reduce la complejidad del cliente y desacopla al frontend de la topología interna del backend |
+| **Protected Routes** | `ProtectedRoute.jsx` | Centraliza la lógica de guarda en un único componente wrapper. Redirige a `/login` si no hay sesión, o a `/unauthorized` si el rol no tiene permiso, sin duplicar esta lógica en cada página |
+| **Componentes UI reutilizables** | `src/components/ui/` | Estandariza el aspecto visual de botones, tarjetas, tablas e inputs. Cualquier cambio de diseño se aplica en un solo archivo y se propaga a toda la aplicación |
+| **Modal-based CRUD** | `Modal.jsx`, dashboards | Las operaciones de creación (datos, KPIs) se presentan en modales sin cambio de ruta, manteniendo el contexto del dashboard y evitando navegación innecesaria |
+| **Theming por rol** | Dashboards | Esquemas de color distintos por rol (índigo para `ADMIN_GENERAL`, esmeralda para `ADMIN_SUCURSAL`, ámbar para `VENDEDOR`) permiten al usuario identificar visualmente su nivel de acceso |
+| **Loading & Empty States** | `Table.jsx` | Todas las tablas muestran spinner de carga y mensaje de vacío, evitando que el usuario interprete una tabla vacía como un error |
+| **Validación client-side** | `Login.jsx`, `Register.jsx`, formularios | Valida campos requeridos y formatos antes de enviar al servidor, reduciendo llamadas fallidas y mejorando la experiencia de usuario |

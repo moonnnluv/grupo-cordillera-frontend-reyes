@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Input from '../../ui/Input'
 import Button from '../../ui/Button'
 
-const TIPOS = ['VENTAS', 'PRODUCCION', 'CALIDAD', 'LOGISTICA', 'FINANCIERO']
+const TIPOS = ['VENTAS', 'RENTABILIDAD', 'INVENTARIO']
 const EMPTY = { nombre: '', tipo: 'VENTAS', valor: '', unidad: '', sucursal: '' }
 
 export default function KpiCalculatorForm({ onSubmit, loading = false }) {
