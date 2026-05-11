@@ -51,7 +51,7 @@ export default function DashboardAdminGeneral() {
   const handleKpiSubmit = async (formData) => {
     setSavingKpi(true)
     try {
-      await api.post('/api/kpi/calcular', formData)
+      await api.post('/api/kpi/calcular', null, { params: formData })
       setShowKpiForm(false)
       setRefreshKpis(n => n + 1)
     } catch (err) {

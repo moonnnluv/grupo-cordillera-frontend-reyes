@@ -12,7 +12,8 @@ export default function KpiCalculatorForm({ onSubmit, loading = false }) {
 
   const handleSubmit = e => {
     e.preventDefault()
-    onSubmit?.({ ...form, valor: Number(form.valor) })
+    const { tipo, nombre, valor, sucursal } = form
+    onSubmit?.({ tipo, nombre, valorBase: Number(valor), sucursal })
     setForm(EMPTY)
   }
 
