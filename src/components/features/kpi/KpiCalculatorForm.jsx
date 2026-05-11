@@ -3,7 +3,7 @@ import Input from '../../ui/Input'
 import Button from '../../ui/Button'
 
 const TIPOS = ['VENTAS', 'RENTABILIDAD', 'INVENTARIO']
-const EMPTY = { nombre: '', tipo: 'VENTAS', valor: '', unidad: '', sucursal: '' }
+const EMPTY = { nombre: '', tipo: 'VENTAS', valor: '', sucursal: '' }
 
 export default function KpiCalculatorForm({ onSubmit, loading = false }) {
   const [form, setForm] = useState(EMPTY)
@@ -48,22 +48,14 @@ export default function KpiCalculatorForm({ onSubmit, loading = false }) {
         </select>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-        <Input
-          label="Valor"
-          type="number"
-          value={form.valor}
-          onChange={set('valor')}
-          placeholder="0"
-          required
-        />
-        <Input
-          label="Unidad"
-          value={form.unidad}
-          onChange={set('unidad')}
-          placeholder="Ej: %, CLP"
-        />
-      </div>
+      <Input
+        label="Valor base"
+        type="number"
+        value={form.valor}
+        onChange={set('valor')}
+        placeholder="0"
+        required
+      />
 
       <Input
         label="Sucursal"
