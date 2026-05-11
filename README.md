@@ -1,4 +1,4 @@
-# frontend — Dashboard Grupo Cordillera
+﻿# frontend — Dashboard Grupo Cordillera
 **DSY1106 Desarrollo Fullstack III · DuocUC 2026**
 
 Panel de control web para monitoreo de KPIs, datos organizacionales y reportes de negocio. Implementa acceso basado en roles (RBAC): cada rol obtiene una vista y permisos distintos. Se comunica con el backend exclusivamente a través del API Gateway (`localhost:9090`).
@@ -142,6 +142,28 @@ npm run dev
 ```
 
 La aplicación queda disponible en `http://localhost:5173`.
+
+---
+
+## Inicio desde cero
+
+Sigue estos pasos en orden para levantar el frontend partiendo desde cero, con el backend ya corriendo.
+
+> **Prerrequisito:** el backend debe estar levantado y seedeado. Sigue la sección **Inicio desde cero (reset completo)** del README del repositorio backend antes de continuar.
+
+**Paso 1 — Instalar dependencias (solo la primera vez)**
+
+```bash
+npm install
+```
+
+**Paso 2 — Iniciar el servidor de desarrollo**
+
+```bash
+npm run dev
+```
+
+El frontend queda disponible en `http://localhost:5173`.
 
 ---
 
