@@ -18,6 +18,7 @@ export default function DashboardAdminGeneral() {
 
   const [data, setData] = useState({ datos: [], kpis: [], reportes: [], estado: '' })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const [showDatoForm, setShowDatoForm] = useState(false)
   const [showKpiForm, setShowKpiForm] = useState(false)
@@ -31,7 +32,10 @@ export default function DashboardAdminGeneral() {
     setLoading(true)
     api.get('/bff/dashboard')
       .then(res => setData(res.data))
-      .catch(err => console.error('Error al cargar dashboard:', err))
+      .catch(err => {
+        console.error('Error al cargar dashboard:', err)
+        setError('No se pudo cargar la información. Verifica tu conexión.')
+      })
       .finally(() => setLoading(false))
   }, [refreshDatos, refreshKpis])
 
@@ -43,6 +47,7 @@ export default function DashboardAdminGeneral() {
       setRefreshDatos(n => n + 1)
     } catch (err) {
       console.error('Error al guardar dato:', err)
+      setError('No se pudo cargar la información. Verifica tu conexión.')
     } finally {
       setSavingDato(false)
     }
@@ -56,6 +61,7 @@ export default function DashboardAdminGeneral() {
       setRefreshKpis(n => n + 1)
     } catch (err) {
       console.error('Error al calcular KPI:', err)
+      setError('No se pudo cargar la información. Verifica tu conexión.')
     } finally {
       setSavingKpi(false)
     }
@@ -90,6 +96,23 @@ export default function DashboardAdminGeneral() {
       title="Admin General"
       subtitle="Visión consolidada de todas las sucursales"
     >
+      {error && (
+        <div style={{
+          padding: '12px 14px', borderRadius: '10px', marginBottom: '20px',
+          backgroundColor: '#fff1f2', border: '1px solid #fecdd3',
+          color: '#e11d48', fontSize: '13px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚠</span> {error}
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e11d48', fontSize: '18px', lineHeight: 1, padding: '0 2px' }}
+          >×</button>
+        </div>
+      )}
+
       {/* Welcome banner */}
       <div className="banner-row" style={{
         borderRadius: '16px', padding: '24px 28px',

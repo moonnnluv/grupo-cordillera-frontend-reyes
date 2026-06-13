@@ -15,10 +15,18 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('token') || null)
 
   const login = useCallback((userData, jwt) => {
+    let enrichedUser = { ...userData }
+    try {
+      const payload = JSON.parse(atob(jwt.split('.')[1]))
+      if (payload.sucursal != null && enrichedUser.sucursal == null) {
+        enrichedUser.sucursal = payload.sucursal
+      }
+    } catch { /* JWT mal formado — ignorar */ }
+
     localStorage.setItem('token', jwt)
-    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('user', JSON.stringify(enrichedUser))
     setToken(jwt)
-    setUser(userData)
+    setUser(enrichedUser)
   }, [])
 
   const logout = useCallback(() => {
