@@ -10,6 +10,7 @@ import DatosTable from '../components/features/datos/DatosTable'
 import DatoForm from '../components/features/datos/DatoForm'
 import KpiTable from '../components/features/kpi/KpiTable'
 import KpiCalculatorForm from '../components/features/kpi/KpiCalculatorForm'
+import ReportesTable from '../components/features/reportes/ReportesTable'
 
 const ACCENT = '#818cf8'
 
@@ -24,8 +25,12 @@ export default function DashboardAdminGeneral() {
   const [savingDato, setSavingDato] = useState(false)
   const [savingKpi, setSavingKpi] = useState(false)
 
-  const [refreshDatos, setRefreshDatos] = useState(0)
-  const [refreshKpis, setRefreshKpis] = useState(0)
+  // Edit dato state
+  const [editingDato, setEditingDato] = useState(null)
+  const [savingEditDato, setSavingEditDato] = useState(false)
+
+  const [refresh, setRefresh] = useState(0)
+  const bump = () => setRefresh(n => n + 1)
 
   useEffect(() => {
     setLoading(true)
@@ -33,18 +38,48 @@ export default function DashboardAdminGeneral() {
       .then(res => setData(res.data))
       .catch(err => console.error('Error al cargar dashboard:', err))
       .finally(() => setLoading(false))
-  }, [refreshDatos, refreshKpis])
+  }, [refresh])
 
   const handleDatoSubmit = async (formData) => {
     setSavingDato(true)
     try {
       await api.post('/api/datos', formData)
       setShowDatoForm(false)
-      setRefreshDatos(n => n + 1)
+      bump()
     } catch (err) {
       console.error('Error al guardar dato:', err)
+<<<<<<< Updated upstream
+=======
+      setError('No se pudo guardar el dato. Verifica tu conexión.')
+>>>>>>> Stashed changes
     } finally {
       setSavingDato(false)
+    }
+  }
+
+  const handleEditDatoSubmit = async (formData) => {
+    if (!editingDato?.id) return
+    setSavingEditDato(true)
+    try {
+      await api.put(`/api/datos/${editingDato.id}`, formData)
+      setEditingDato(null)
+      bump()
+    } catch (err) {
+      console.error('Error al actualizar dato:', err)
+      setError('No se pudo actualizar el dato. Verifica tu conexión.')
+    } finally {
+      setSavingEditDato(false)
+    }
+  }
+
+  const handleDeleteDato = async (dato) => {
+    if (!window.confirm(`¿Eliminar el dato "${dato.indicador}"?`)) return
+    try {
+      await api.delete(`/api/datos/${dato.id}`)
+      bump()
+    } catch (err) {
+      console.error('Error al eliminar dato:', err)
+      setError('No se pudo eliminar el dato. Verifica tu conexión.')
     }
   }
 
@@ -53,11 +88,26 @@ export default function DashboardAdminGeneral() {
     try {
       await api.post('/api/kpi/calcular', formData)
       setShowKpiForm(false)
-      setRefreshKpis(n => n + 1)
+      bump()
     } catch (err) {
       console.error('Error al calcular KPI:', err)
+<<<<<<< Updated upstream
+=======
+      setError('No se pudo calcular el KPI. Verifica tu conexión.')
+>>>>>>> Stashed changes
     } finally {
       setSavingKpi(false)
+    }
+  }
+
+  const handleDeleteKpi = async (kpi) => {
+    if (!window.confirm(`¿Eliminar el KPI "${kpi.nombre || kpi.indicador}"?`)) return
+    try {
+      await api.delete(`/api/kpi/${kpi.id}`)
+      bump()
+    } catch (err) {
+      console.error('Error al eliminar KPI:', err)
+      setError('No se pudo eliminar el KPI. Verifica tu conexión.')
     }
   }
 
@@ -134,7 +184,12 @@ export default function DashboardAdminGeneral() {
             + Nuevo dato
           </Button>
         </div>
-        <DatosTable datos={data.datos} loading={loading} />
+        <DatosTable
+          datos={data.datos}
+          loading={loading}
+          onEdit={setEditingDato}
+          onDelete={handleDeleteDato}
+        />
       </div>
 
       {/* KPIs section */}
@@ -147,7 +202,16 @@ export default function DashboardAdminGeneral() {
             + Calcular KPI
           </Button>
         </div>
-        <KpiTable kpis={data.kpis} loading={loading} />
+        <KpiTable kpis={data.kpis} loading={loading} onDelete={handleDeleteKpi} />
+      </div>
+
+      {/* Reportes section */}
+      <div style={{ marginBottom: '24px' }}>
+        <ReportesTable
+          reportes={data.reportes}
+          loading={loading}
+          onCreated={bump}
+        />
       </div>
 
       {/* Circuit breaker / system status */}
@@ -160,6 +224,19 @@ export default function DashboardAdminGeneral() {
         title="Registrar nuevo dato"
       >
         <DatoForm onSubmit={handleDatoSubmit} loading={savingDato} />
+      </Modal>
+
+      {/* Modal: editar dato */}
+      <Modal
+        open={!!editingDato}
+        onClose={() => setEditingDato(null)}
+        title="Editar dato"
+      >
+        <DatoForm
+          onSubmit={handleEditDatoSubmit}
+          loading={savingEditDato}
+          initialData={editingDato}
+        />
       </Modal>
 
       {/* Modal: calcular KPI */}
