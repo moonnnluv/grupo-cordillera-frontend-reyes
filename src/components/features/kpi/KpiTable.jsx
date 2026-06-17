@@ -1,11 +1,27 @@
 import Badge from '../../ui/Badge'
+import Button from '../../ui/Button'
 
 function formatNumber(value) {
   const num = Number(value)
   return isNaN(num) ? '—' : num.toLocaleString('es-CL')
 }
 
-export default function KpiTable({ kpis = [], loading = false, accent = '#34d399', accentBg = 'rgba(52,211,153,0.1)', title = 'Indicadores KPI' }) {
+const COLS_BASE = '1fr 1fr 1fr 1fr'
+const COLS_WITH_ACTIONS = '1fr 1fr 1fr 1fr 90px'
+
+export default function KpiTable({
+  kpis = [],
+  loading = false,
+  accent = '#34d399',
+  accentBg = 'rgba(52,211,153,0.1)',
+  title = 'Indicadores KPI',
+  onDelete,
+}) {
+  const cols = onDelete ? COLS_WITH_ACTIONS : COLS_BASE
+  const headers = onDelete
+    ? ['Nombre', 'Tipo', 'Valor', 'Sucursal', 'Acciones']
+    : ['Nombre', 'Tipo', 'Valor', 'Sucursal']
+
   return (
     <div
       style={{
@@ -48,17 +64,16 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
 
       {!loading && kpis.length > 0 && (
         <div>
-          {/* Encabezado: oculto en móvil */}
           <div
             className="table-card-header"
             style={{
               display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr 1fr',
+              gridTemplateColumns: cols,
               padding: '10px 24px 6px',
               borderBottom: '1px solid #f8fafc',
             }}
           >
-            {['Nombre', 'Tipo', 'Valor', 'Sucursal'].map(h => (
+            {headers.map(h => (
               <div
                 key={h}
                 style={{
@@ -80,10 +95,11 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
               className="table-card-row"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                padding: '14px 24px',
+                gridTemplateColumns: cols,
+                padding: '10px 24px',
                 borderBottom: i < kpis.length - 1 ? '1px solid #f8fafc' : 'none',
                 transition: 'background 0.1s',
+                alignItems: 'center',
               }}
               onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fafafa')}
               onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -100,6 +116,17 @@ export default function KpiTable({ kpis = [], loading = false, accent = '#34d399
               <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>
                 {k.sucursal || '—'}
               </div>
+              {onDelete && (
+                <div>
+                  <Button
+                    variant="danger"
+                    onClick={() => onDelete(k)}
+                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    Eliminar
+                  </Button>
+                </div>
+              )}
             </div>
           ))}
         </div>

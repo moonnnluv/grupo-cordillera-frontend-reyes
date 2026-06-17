@@ -1,39 +1,48 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Input from '../../ui/Input'
 import Button from '../../ui/Button'
 
-const FUENTES = ['VENTAS', 'INVENTARIO', 'FINANZAS', 'ECOMMERCE']
+const FUENTES = ['VENTAS', 'INVENTARIO', 'FINANZAS', 'LOGISTICA', 'RRHH']
+
 const today = () => new Date().toISOString().split('T')[0]
+
 const EMPTY = () => ({ fuente: 'VENTAS', indicador: '', valor: '', fecha: today(), sucursal: '' })
 
-export default function DatoForm({ onSubmit, loading = false }) {
-  const [form, setForm] = useState(EMPTY())
+export default function DatoForm({ onSubmit, loading = false, initialData = null }) {
+  const fromInitial = (d) => ({
+    fuente: FUENTES.includes(d?.fuente) ? d.fuente : 'VENTAS',
+    indicador: d?.indicador ?? '',
+    valor: d?.valor != null ? String(d.valor) : '',
+    fecha: d?.fecha ?? today(),
+    sucursal: d?.sucursal ?? '',
+  })
+
+  const [form, setForm] = useState(initialData ? fromInitial(initialData) : EMPTY())
+
+  useEffect(() => {
+    setForm(initialData ? fromInitial(initialData) : EMPTY())
+  }, [initialData])
 
   const set = field => e => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit?.({ ...form, valor: Number(form.valor) })
-    setForm(EMPTY())
+    if (!initialData) setForm(EMPTY())
   }
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <label style={{ fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-          Fuente <span style={{ color: '#ef4444', marginLeft: '2px' }}>*</span>
-        </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>Fuente</label>
         <select
           value={form.fuente}
           onChange={set('fuente')}
+          required
           style={{
-            padding: '9px 12px',
-            borderRadius: '8px',
-            border: '1px solid #e2e8f0',
-            fontSize: '13px',
-            color: '#0f172a',
-            backgroundColor: '#fff',
-            fontFamily: "'DM Sans', system-ui, sans-serif",
+            padding: '10px 12px', borderRadius: '8px',
+            border: '1.5px solid #e2e8f0', fontSize: '14px',
+            color: '#0f172a', backgroundColor: '#fff', outline: 'none',
           }}
         >
           {FUENTES.map(f => <option key={f} value={f}>{f}</option>)}
@@ -71,7 +80,7 @@ export default function DatoForm({ onSubmit, loading = false }) {
         required
       />
       <Button type="submit" disabled={loading} style={{ alignSelf: 'flex-end' }}>
-        {loading ? 'Guardando...' : 'Guardar dato'}
+        {loading ? 'Guardando...' : initialData ? 'Actualizar dato' : 'Guardar dato'}
       </Button>
     </form>
   )

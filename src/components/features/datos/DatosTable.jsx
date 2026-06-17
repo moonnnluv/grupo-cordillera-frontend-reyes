@@ -1,16 +1,20 @@
 import Table from '../../ui/Table'
+import Button from '../../ui/Button'
 
 function formatNumber(value) {
   const num = Number(value)
   return isNaN(num) ? '—' : num.toLocaleString('es-CL')
 }
 
-export default function DatosTable({ datos = [], loading = false }) {
+const COLS = '2fr 1fr 1fr 1fr 120px'
+
+export default function DatosTable({ datos = [], loading = false, onEdit, onDelete }) {
   const columns = [
     { label: 'Indicador' },
     { label: 'Valor' },
     { label: 'Sucursal', className: 'col-mobile-hidden' },
     { label: 'Fecha', className: 'col-mobile-hidden' },
+    { label: 'Acciones' },
   ]
 
   const renderRow = (d, i) => (
@@ -19,10 +23,11 @@ export default function DatosTable({ datos = [], loading = false }) {
       className="table-card-row"
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        padding: '14px 24px',
+        gridTemplateColumns: COLS,
+        padding: '10px 24px',
         borderBottom: i < datos.length - 1 ? '1px solid #f8fafc' : 'none',
         transition: 'background 0.1s',
+        alignItems: 'center',
       }}
       onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fafafa')}
       onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -35,6 +40,18 @@ export default function DatosTable({ datos = [], loading = false }) {
       </div>
       <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>{d.sucursal || '—'}</div>
       <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>{d.fecha || '—'}</div>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        {onEdit && (
+          <Button variant="ghost" onClick={() => onEdit(d)} style={{ padding: '5px 10px', fontSize: '12px' }}>
+            Editar
+          </Button>
+        )}
+        {onDelete && (
+          <Button variant="danger" onClick={() => onDelete(d)} style={{ padding: '5px 10px', fontSize: '12px' }}>
+            Eliminar
+          </Button>
+        )}
+      </div>
     </div>
   )
 
@@ -46,6 +63,7 @@ export default function DatosTable({ datos = [], loading = false }) {
       loading={loading}
       renderRow={renderRow}
       headerRowClassName="table-card-header"
+      headerGridColumns={COLS}
       emptyIcon="◈"
       emptyTitle="Sin datos registrados"
       emptySubtitle="Los registros aparecerán cuando se ingresen datos al sistema"

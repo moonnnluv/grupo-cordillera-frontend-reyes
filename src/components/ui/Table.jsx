@@ -12,6 +12,7 @@ export default function Table({
   accentBg = 'rgba(99,102,241,0.1)',
   renderRow,
   headerRowClassName,
+  headerGridColumns,
 }) {
   const count = rows?.length ?? 0
 
@@ -68,7 +69,7 @@ export default function Table({
             className={headerRowClassName}
             style={{
               display: 'grid',
-              gridTemplateColumns: `repeat(${columns.length}, 1fr)`,
+              gridTemplateColumns: headerGridColumns ?? `repeat(${columns.length}, 1fr)`,
               padding: '10px 24px 6px',
               borderBottom: '1px solid #f8fafc',
             }}
