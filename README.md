@@ -108,11 +108,23 @@ frontend/
 
 ## Variables de entorno
 
-No se usan archivos `.env`. La URL base del API Gateway está definida en `src/api/axios.js`:
+La URL base del API Gateway se configura mediante la variable de entorno `VITE_API_URL`, leída en `src/api/axios.js`:
 
 ```js
-baseURL: 'http://localhost:9090/'
+baseURL: import.meta.env.VITE_API_URL || 'http://localhost:9090/'
 ```
+
+| Variable | Valor por defecto | Descripción |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:9090/` | URL base del API Gateway |
+
+Para apuntar a otro entorno, crear un archivo `.env` en la raíz del proyecto (`frontend/`) con:
+
+```
+VITE_API_URL=http://localhost:9090/
+```
+
+Ver `.env.example` como plantilla. Vite expone automáticamente las variables prefijadas con `VITE_` vía `import.meta.env`; si no se define `.env`, se usa el valor por defecto `http://localhost:9090/`.
 
 El token JWT y el objeto de usuario se persisten en `localStorage`:
 
@@ -120,8 +132,6 @@ El token JWT y el objeto de usuario se persisten en `localStorage`:
 |---|---|
 | `token` | JWT emitido por ms-auth |
 | `user` | Objeto JSON con `username`, `email` y `role` |
-
-> Para apuntar a otro entorno, editar la `baseURL` en `src/api/axios.js`.
 
 ---
 
@@ -276,8 +286,13 @@ Todos los requests pasan por el API Gateway en `http://localhost:9090/`.
 | `GET` | `/bff/dashboard` | `DashboardAdminGeneral.jsx` | Datos, KPIs y reportes globales |
 | `GET` | `/bff/dashboard/sucursal/{sucursal}` | `DashboardAdminSucursal.jsx` | Datos, KPIs y reportes por sucursal |
 | `POST` | `/api/datos` | `DashboardAdminGeneral.jsx` | Registrar nuevo dato organizacional |
+| `PUT` | `/api/datos/{id}` | `DashboardAdminGeneral.jsx` | Editar un dato organizacional existente |
+| `DELETE` | `/api/datos/{id}` | `DashboardAdminGeneral.jsx` | Eliminar un dato organizacional |
 | `POST` | `/api/kpi/calcular` | `DashboardAdminGeneral.jsx` | Calcular y registrar un KPI |
+| `DELETE` | `/api/kpi/{id}` | `DashboardAdminGeneral.jsx` | Eliminar un KPI |
 | `GET` | `/api/kpi/tipo/VENTAS` | `DashboardVendedor.jsx` | KPIs de ventas para el vendedor |
+| `POST` | `/api/reportes` | `ReportesTable.jsx` | Crear un nuevo reporte |
+| `DELETE` | `/api/reportes/{id}` | `ReportesTable.jsx` | Eliminar un reporte |
 
 El token JWT se inyecta automáticamente en todos los requests mediante un interceptor de Axios:
 

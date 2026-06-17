@@ -18,6 +18,7 @@ export default function ReportesTable({
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(null)
+  const [deleteError, setDeleteError] = useState(null)
 
   const set = field => e => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
@@ -35,6 +36,18 @@ export default function ReportesTable({
       setError('No se pudo crear el reporte. Intenta nuevamente.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDelete = async reporte => {
+    if (!window.confirm(`¿Eliminar el reporte "${reporte.titulo || reporte.nombre}"?`)) return
+    setDeleteError(null)
+    try {
+      await api.delete(`/api/reportes/${reporte.id}`)
+      onCreated?.()
+    } catch (err) {
+      console.error('Error al eliminar reporte:', err)
+      setDeleteError('No se pudo eliminar el reporte. Verifica tu conexión.')
     }
   }
 
@@ -70,6 +83,24 @@ export default function ReportesTable({
           </div>
         </div>
 
+        {deleteError && (
+          <div style={{
+            margin: '0 24px 16px', marginTop: '16px',
+            padding: '12px 14px', borderRadius: '10px',
+            backgroundColor: '#fff1f2', border: '1px solid #fecdd3',
+            color: '#e11d48', fontSize: '13px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>⚠</span> {deleteError}
+            </div>
+            <button
+              onClick={() => setDeleteError(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e11d48', fontSize: '18px', lineHeight: 1, padding: '0 2px' }}
+            >×</button>
+          </div>
+        )}
+
         {loading && (
           <div style={{ padding: '48px', textAlign: 'center', color: '#94a3b8', fontSize: '14px' }}>
             Cargando reportes...
@@ -92,12 +123,12 @@ export default function ReportesTable({
               className="table-card-header"
               style={{
                 display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 100px',
                 padding: '10px 24px 6px',
                 borderBottom: '1px solid #f8fafc',
               }}
             >
-              {['Título', 'Tipo', 'Sucursal', 'Fecha'].map(h => (
+              {['Título', 'Tipo', 'Sucursal', 'Fecha', 'Acciones'].map(h => (
                 <div
                   key={h}
                   style={{
@@ -119,10 +150,11 @@ export default function ReportesTable({
                 className="table-card-row"
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '2fr 1fr 1fr 1fr',
+                  gridTemplateColumns: '2fr 1fr 1fr 1fr 100px',
                   padding: '14px 24px',
                   borderBottom: i < reportes.length - 1 ? '1px solid #f8fafc' : 'none',
                   transition: 'background 0.1s',
+                  alignItems: 'center',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#fafafa')}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -140,6 +172,15 @@ export default function ReportesTable({
                 </div>
                 <div className="col-mobile-hidden" style={{ fontSize: '12px', color: '#94a3b8' }}>
                   {r.fecha || r.createdAt || '—'}
+                </div>
+                <div>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleDelete(r)}
+                    style={{ padding: '5px 10px', fontSize: '12px' }}
+                  >
+                    Eliminar
+                  </Button>
                 </div>
               </div>
             ))}

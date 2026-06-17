@@ -122,21 +122,67 @@ export default function CircuitBreakerStatus({ estado }) {
         })}
       </div>
 
-      {estado && (
-        <div
-          style={{
-            marginTop: '16px',
-            padding: '10px 14px',
-            borderRadius: '8px',
-            backgroundColor: '#f0fdf4',
-            border: '1px solid #bbf7d0',
-          }}
-        >
-          <span style={{ fontSize: '12px', color: '#15803d', fontWeight: '500' }}>
-            Estado BFF: <strong>{estado}</strong>
+      <BffStatusBanner estado={estado} />
+    </Card>
+  )
+}
+
+function BffStatusBanner({ estado }) {
+  if (estado === 'SERVICIO_NO_DISPONIBLE') {
+    return (
+      <div
+        style={{
+          marginTop: '16px',
+          padding: '10px 14px',
+          borderRadius: '8px',
+          backgroundColor: '#fff7ed',
+          border: '1px solid #fed7aa',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '14px' }}>⚠</span>
+          <span style={{ fontSize: '12px', color: '#c2410c', fontWeight: '700' }}>
+            Servicio degradado — Circuit Breaker activo
           </span>
         </div>
-      )}
-    </Card>
+        <p style={{ fontSize: '11px', color: '#c2410c', margin: '6px 0 0', opacity: 0.85 }}>
+          Algunos datos pueden no estar disponibles temporalmente. El sistema está usando una respuesta de respaldo mientras el servicio se recupera.
+        </p>
+      </div>
+    )
+  }
+
+  if (estado === 'OK') {
+    return (
+      <div
+        style={{
+          marginTop: '16px',
+          padding: '10px 14px',
+          borderRadius: '8px',
+          backgroundColor: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+        }}
+      >
+        <span style={{ fontSize: '12px', color: '#15803d', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>✓</span> Sistema operativo
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      style={{
+        marginTop: '16px',
+        padding: '10px 14px',
+        borderRadius: '8px',
+        backgroundColor: '#f8fafc',
+        border: '1px solid #e2e8f0',
+      }}
+    >
+      <span style={{ fontSize: '12px', color: '#64748b', fontWeight: '500' }}>
+        Verificando estado...
+      </span>
+    </div>
   )
 }
