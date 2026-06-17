@@ -29,6 +29,8 @@ export default function DashboardAdminGeneral() {
   const [editingDato, setEditingDato] = useState(null)
   const [savingEditDato, setSavingEditDato] = useState(false)
 
+  const [error, setError] = useState(null)
+
   const [refresh, setRefresh] = useState(0)
   const bump = () => setRefresh(n => n + 1)
 
@@ -48,10 +50,7 @@ export default function DashboardAdminGeneral() {
       bump()
     } catch (err) {
       console.error('Error al guardar dato:', err)
-<<<<<<< Updated upstream
-=======
       setError('No se pudo guardar el dato. Verifica tu conexión.')
->>>>>>> Stashed changes
     } finally {
       setSavingDato(false)
     }
@@ -91,10 +90,7 @@ export default function DashboardAdminGeneral() {
       bump()
     } catch (err) {
       console.error('Error al calcular KPI:', err)
-<<<<<<< Updated upstream
-=======
       setError('No se pudo calcular el KPI. Verifica tu conexión.')
->>>>>>> Stashed changes
     } finally {
       setSavingKpi(false)
     }
@@ -140,6 +136,23 @@ export default function DashboardAdminGeneral() {
       title="Admin General"
       subtitle="Visión consolidada de todas las sucursales"
     >
+      {error && (
+        <div style={{
+          padding: '12px 14px', borderRadius: '10px', marginBottom: '20px',
+          backgroundColor: '#fff1f2', border: '1px solid #fecdd3',
+          color: '#e11d48', fontSize: '13px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>⚠</span> {error}
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e11d48', fontSize: '18px', lineHeight: 1, padding: '0 2px' }}
+          >×</button>
+        </div>
+      )}
+
       {/* Welcome banner */}
       <div className="banner-row" style={{
         borderRadius: '16px', padding: '24px 28px',

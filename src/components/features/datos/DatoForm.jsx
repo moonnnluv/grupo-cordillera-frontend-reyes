@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react'
 import Input from '../../ui/Input'
 import Button from '../../ui/Button'
 
-const EMPTY = { indicador: '', valor: '', unidad: '', sucursal: '' }
+const FUENTES = ['VENTAS', 'INVENTARIO', 'FINANZAS', 'LOGISTICA', 'RRHH']
 
-<<<<<<< Updated upstream
-export default function DatoForm({ onSubmit, loading = false }) {
-  const [form, setForm] = useState(EMPTY)
-=======
+const today = () => new Date().toISOString().split('T')[0]
+
+const EMPTY = () => ({ fuente: 'VENTAS', indicador: '', valor: '', fecha: today(), sucursal: '' })
+
 export default function DatoForm({ onSubmit, loading = false, initialData = null }) {
   const fromInitial = (d) => ({
     fuente: FUENTES.includes(d?.fuente) ? d.fuente : 'VENTAS',
@@ -22,22 +22,32 @@ export default function DatoForm({ onSubmit, loading = false, initialData = null
   useEffect(() => {
     setForm(initialData ? fromInitial(initialData) : EMPTY())
   }, [initialData])
->>>>>>> Stashed changes
 
   const set = field => e => setForm(prev => ({ ...prev, [field]: e.target.value }))
 
   const handleSubmit = e => {
     e.preventDefault()
     onSubmit?.({ ...form, valor: Number(form.valor) })
-<<<<<<< Updated upstream
-    setForm(EMPTY)
-=======
     if (!initialData) setForm(EMPTY())
->>>>>>> Stashed changes
   }
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: '#374151' }}>Fuente</label>
+        <select
+          value={form.fuente}
+          onChange={set('fuente')}
+          required
+          style={{
+            padding: '10px 12px', borderRadius: '8px',
+            border: '1.5px solid #e2e8f0', fontSize: '14px',
+            color: '#0f172a', backgroundColor: '#fff', outline: 'none',
+          }}
+        >
+          {FUENTES.map(f => <option key={f} value={f}>{f}</option>)}
+        </select>
+      </div>
       <Input
         label="Indicador"
         value={form.indicador}
@@ -55,10 +65,11 @@ export default function DatoForm({ onSubmit, loading = false, initialData = null
           required
         />
         <Input
-          label="Unidad"
-          value={form.unidad}
-          onChange={set('unidad')}
-          placeholder="Ej: CLP, %, unidades"
+          label="Fecha"
+          type="date"
+          value={form.fecha}
+          onChange={set('fecha')}
+          required
         />
       </div>
       <Input
